@@ -1,0 +1,38 @@
+{
+  "name": "skillsetfrontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.5.2",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@types/js-cookie": "^3.0.6",
+    "ag-grid-community": "^33.0.3",
+    "ag-grid-react": "^33.0.3",
+    "antd": "^5.22.6",
+    "axios": "^1.7.9",
+    "html2pdf.js": "^0.10.2",
+    "js-cookie": "^3.0.5",
+    "next": "15.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.2",
+    "recharts": "^2.15.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
