@@ -147,7 +147,7 @@ export const updateTeamMemberSkill = async (
   expectedLevel: string
 ) => {
   try {
-    const response = await ApiService.patch(`/team-members/${memberId}/skills/${skillId}`, {
+    const response = await ApiService.patch(`/users/team-members/${memberId}/skills/${skillId}`, {
       expectedLevel
     });
     return response.data;

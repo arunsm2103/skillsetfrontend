@@ -58,6 +58,7 @@ const TeamOverview = () => {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [updatingSkill, setUpdatingSkill] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [skillLevels, setSkillLevels] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     fetchTeamMembers();
@@ -93,6 +94,13 @@ const TeamOverview = () => {
     try {
       setUpdatingSkill(true);
       await updateTeamMemberSkill(selectedMember.id, skillId, newLevel);
+      
+      // Update local state immediately
+      setSkillLevels(prev => ({
+        ...prev,
+        [skillId]: newLevel
+      }));
+      
       showToast.success('Skill level updated successfully');
       await fetchTeamMembers();
       
@@ -146,7 +154,7 @@ const TeamOverview = () => {
                 prefix={<SearchOutlined className="text-gray-400" />}
               />
               
-              <div className="space-y-2 overflow-y-auto h-[500px] pr-2">
+              <div className="space-y-2 overflow-y-auto h-[550px] pr-2">
                 {filteredMembers.map((member) => (
                   <div
                     key={member.id}
@@ -202,7 +210,7 @@ const TeamOverview = () => {
                 </Button>
               </div>
 
-              <div className="overflow-y-auto h-[500px] pr-2">
+              <div className="overflow-y-auto h-[550px] pr-2">
                 <div className="flex items-center gap-2 mb-3">
                   <h3 className="text-lg font-bold text-gray-800">Skills Assessment</h3>
                   <span className="text-gray-500 text-sm">
@@ -222,15 +230,15 @@ const TeamOverview = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">{assessment.skill.description}</p>
                         <div className="flex items-center gap-3">
-                          <span className={`font-medium ${getLevelColor(assessment.currentLevel, assessment.expectedLevel)}`}>
+                          <span className={`font-medium ${getLevelColor(assessment.currentLevel, skillLevels[assessment.skill.id] || assessment.expectedLevel)}`}>
                             Current: {assessment.currentLevel}
                           </span>
                           <span className="text-gray-400">→</span>
                           <div className="flex items-center gap-2">
                             <span className="text-gray-700 font-medium">Expected:</span>
                             <Select
-                              value={assessment.expectedLevel}
-                              onChange={(value) => handleExpectedLevelChange(assessment.id, value)}
+                              value={skillLevels[assessment.skill.id] || assessment.expectedLevel}
+                              onChange={(value) => handleExpectedLevelChange(assessment.skill.id, value)}
                               size="small"
                               style={{ width: 120 }}
                               loading={updatingSkill}

@@ -1,26 +1,40 @@
 import ApiService from "./api";
+import { ENDPOINTS } from './endpoints';
 
-export const getTickets = async (search?: string, status?: string, queryType?: string) => {
+interface TicketUpdate {
+  status: string;
+  adminNotes: string;
+}
+
+export const getTickets = async () => {
   try {
-    const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (status) params.append('status', status);
-    if (queryType) params.append('queryType', queryType);
-
-    const response = await ApiService.get('/helpdesk/tickets', { params });
+    const response = await ApiService.get(ENDPOINTS.HELPDESK.GET_TICKETS);
     return response.data;
   } catch (error) {
-    console.error('Error fetching employee overview:', error);
+    console.error('Error fetching tickets:', error);
     throw error;
   }
 };
 
-export const addTicket = async (ticketData: { queryType: string; description: string; priority: string }) => {
+export const addTicket = async (ticketData: any) => {
   try {
-    const response = await ApiService.post('/helpdesk/tickets', ticketData);
+    const response = await ApiService.post(ENDPOINTS.HELPDESK.ADD_TICKET, ticketData);
     return response.data;
   } catch (error) {
-    console.error('Error creating ticket:', error);
+    console.error('Error adding ticket:', error);
+    throw error;
+  }
+};
+
+export const updateTicket = async (ticketId: string, updates: TicketUpdate) => {
+  try {
+    const response = await ApiService.patch(
+      `/helpdesk/tickets/${ticketId}`, 
+      updates
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating ticket:', error);
     throw error;
   }
 };

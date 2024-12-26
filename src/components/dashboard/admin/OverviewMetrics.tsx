@@ -26,7 +26,7 @@ const OverviewMetrics = ({ metrics, loading }: OverviewMetricsProps) => {
         </Card>
         <Card className="shadow-sm">
           <div className="text-sm text-gray-600">Departments</div>
-          <div className="text-2xl font-semibold mt-2">3</div>
+          <div className="text-2xl font-semibold mt-2">{metrics?.totalBusinessUnits}</div>
         </Card>
     </div>
   );
