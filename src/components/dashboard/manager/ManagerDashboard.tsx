@@ -22,6 +22,7 @@ import {
 } from '@ant-design/icons';
 import { Card, Button } from 'antd';
 import { useRouter } from 'next/navigation';
+import SkillsOverview from './SkillsOverview';
 
 const COLORS = ["#22c55e", "#eab308"];
 
@@ -99,7 +100,7 @@ export default function ManagerDashboard() {
   };
 
   return (
-    <main className="py-6 space-y-6">
+    <main className="py-6 space-y-6 max-w-7xl mx-auto px-4">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="shadow-sm hover:shadow-md transition-shadow">
@@ -145,8 +146,9 @@ export default function ManagerDashboard() {
         </Card>
       </div>
 
-      {/* Progress Overview */}
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Progress Overview */}
         <div className="lg:col-span-2">
           <Card className="shadow-sm h-[500px]">
             <div className="flex items-center justify-between mb-6">
@@ -245,6 +247,11 @@ export default function ManagerDashboard() {
             ))}
           </div>
         </Card>
+      </div>
+
+      {/* Skills Overview Section */}
+      <div className="grid grid-cols-1 gap-6">
+        <SkillsOverview />
       </div>
     </main>
   );

@@ -110,6 +110,27 @@ export const getSkillDirectory = async (): Promise<Skill[]> => {
   }
 };
 
+export interface MasterSkill {
+  id: string;
+  name: string;
+  category: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+  expectedLevel: string;
+}
+
+export const getAllSkills = async (): Promise<MasterSkill[]> => {
+  try {
+    const response = await ApiService.get('/skills');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching skill directory:', error);
+    throw error;
+  }
+};
+
+
 interface AddSkillPayload {
   name: string;
   category: string;

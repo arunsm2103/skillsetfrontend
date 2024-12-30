@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { getEmployeeOverview } from "@/services/dashboardService";
+import { getAllSkills, getEmployeeOverview, getSkillDirectory, MasterSkill } from "@/services/dashboardService";
 import { getUser } from "@/services/userService";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,11 +13,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import SkillForm from "@/components/SkillForm";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { addSkillAssessment } from "@/services/skillService";
 
 const COLORS = ["#22c55e", "#eab308"];
-interface Skill {
+interface SkillOverview {
   skillName: string;
   currentLevel: number;
   expectedLevel: number;
@@ -35,7 +36,7 @@ interface Ticket {
 }
 
 interface EmployeeOverview {
-  skills: Skill[];
+  skills: SkillOverview[];
   tickets: Ticket[];
   progress: {
     totalSkills: number;
@@ -57,38 +58,73 @@ interface UserProfile {
   };
 }
 
+interface SkillFormData {
+  skillId: string;
+  currentLevel: string;
+  certificationName: string;
+  certificationUrl: string;
+}
+
 export default function EmployeeDashboard() {
   const [overview, setOverview] = useState<EmployeeOverview | null>(null);
   const [Profile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSkillFormVisible, setIsSkillFormVisible] = useState(false);
+  const [showSkillModal, setShowSkillModal] = useState(false);
+  const [availableSkills, setAvailableSkills] = useState<MasterSkill[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const { user } = useAuth();
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [overviewResponse, userDataResponse] = await Promise.all([
-          getEmployeeOverview(),
-          getUser(user?.id as string)
-        ]);
-        setOverview(overviewResponse);
-        setUserProfile(userDataResponse);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      const [overviewResponse, userDataResponse] = await Promise.all([
+        getEmployeeOverview(),
+        getUser(user?.id as string)
+      ]);
+      setOverview(overviewResponse);
+      setUserProfile(userDataResponse);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      message.error("Failed to refresh dashboard data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (user?.id) {
-      fetchData();
+      fetchDashboardData();
     }
   }, [user?.id]);
 
-  const handleAddSkill = (values: any) => {
-    // Handle adding new skill here
-    console.log('New skill:', values);
+  useEffect(() => {
+    fetchAvailableSkills();
+  }, []);
+
+  const fetchAvailableSkills = async () => {
+    try {
+      const skills = await getAllSkills();
+      setAvailableSkills(skills);
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+      message.error('Failed to fetch available skills');
+    }
+  };
+
+  const handleAddSkill = async (formData: SkillFormData) => {
+    setLoading(true);
+    try {
+      await addSkillAssessment(formData);
+      message.success('Skill assessment added successfully');
+      setShowSkillModal(false);
+      // Refetch all dashboard data
+      await fetchDashboardData();
+    } catch (error) {
+      message.error('Failed to add skill assessment');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (isLoading) {
@@ -110,7 +146,7 @@ export default function EmployeeDashboard() {
               <Button 
                 type="primary"
                 icon={<PlusOutlined />}
-                onClick={() => setIsSkillFormVisible(true)}
+                onClick={() => setShowSkillModal(true)}
               >
                 Add Skill
               </Button>
@@ -309,11 +345,14 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      <SkillForm
-        visible={isSkillFormVisible}
-        onClose={() => setIsSkillFormVisible(false)}
-        onSave={handleAddSkill}
-      />
+      {showSkillModal && (
+        <SkillForm
+          availableSkills={availableSkills}
+          onSubmit={handleAddSkill}
+          onCancel={() => setShowSkillModal(false)}
+          loading={loading}
+        />
+      )}
     </main>
   );
 }

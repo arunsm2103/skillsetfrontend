@@ -1,19 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card } from 'antd';
-import { BarChartOutlined, EyeOutlined } from '@ant-design/icons';
+import { Select } from 'antd';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getTeamSkills } from '@/services/dashboardService';
 
 interface TeamSkill {
   skillId: string;
   skillName: string;
   usersCount: number;
+  category: string;
 }
 
 const SkillsOverview = () => {
   const [skills, setSkills] = useState<TeamSkill[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterType, setFilterType] = useState('all');
 
   useEffect(() => {
     fetchSkills();
@@ -30,44 +32,109 @@ const SkillsOverview = () => {
     }
   };
 
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-6">Skills Overview</h1>
-      <div className="bg-white rounded-xl shadow p-6 h-[500px] col-span-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <BarChartOutlined className="text-blue-600 text-xl" />
-                  <h3 className="text-lg font-semibold text-black">
-                    Skills Overview
-                  </h3>
-                </div>
-              </div>
+  const getFilteredData = () => {
+    let filteredData = [...skills];
+    if (filterType !== 'all') {
+      filteredData = filteredData.filter(skill => skill.category === filterType);
+    }
+    // Sort by user count for better visualization
+    return filteredData.sort((a, b) => b.usersCount - a.usersCount).slice(0, 10);
+  };
+  console.log(getFilteredData(),'kk');
 
-              <div className="h-[400px] overflow-y-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left">
-                      <th className="pb-3 text-black">Skill</th>
-                      <th className="pb-3 text-black">Count</th>
-                      <th className="pb-3 text-black">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {skills?.map((skill) => (
-                      <tr key={skill.skillId} className="border-t">
-                        <td className="py-3 text-black">{skill.skillName}</td>
-                        <td className="py-3 text-black">{skill.usersCount}</td>
-                        <td className="py-3 text-black">
-                          <button className="text-blue-600 hover:text-blue-800">
-                            <EyeOutlined />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 shadow-lg rounded border">
+          <p className="font-medium text-gray-800">{label}</p>
+          <p className="text-blue-600">
+            {payload[0].value} team members
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow p-6 h-[500px]">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-gray-800">
+          Skills Distribution
+        </h3>
+        <Select
+          defaultValue="all"
+          style={{ width: 150 }}
+          onChange={setFilterType}
+          options={[
+            { value: 'all', label: 'All Skills' },
+            { value: 'technical', label: 'Technical' },
+            { value: 'soft', label: 'Soft Skills' },
+            { value: 'domain', label: 'Domain' },
+          ]}
+        />
+      </div>
+
+      <div className="h-[400px]">
+        {loading ? (
+          <div className="h-full flex items-center justify-center text-gray-500">
+            Loading skills data...
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={getFilteredData()}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 40,
+                bottom: 60,
+              }}
+            >
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                vertical={false}
+              />
+              <XAxis 
+                dataKey="skillName" 
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                interval={0}
+                tick={{ 
+                  fill: '#4B5563',
+                  fontSize: 12
+                }}
+              />
+              <YAxis 
+                tick={{ 
+                  fill: '#4B5563',
+                  fontSize: 12
+                }}
+                label={{ 
+                  value: 'Team Members', 
+                  angle: -90, 
+                  position: 'insideLeft',
+                  style: { fill: '#4B5563' }
+                }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar 
+                dataKey="usersCount" 
+                fill="#4F46E5"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={50}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {!loading && skills.length === 0 && (
+        <div className="h-full flex items-center justify-center text-gray-500">
+          No skills data available
+        </div>
+      )}
     </div>
   );
 };
