@@ -80,13 +80,13 @@ export default function AdminHelpDesk() {
       field: 'submittedBy',
       headerName: 'Submitted By',
       flex: 1.5,
-      cellRenderer: (params: any) => `${params.value.employeeName} (${params.value.role})`
+      cellRenderer: (params: { value: { employeeName: string; role: string } }) => `${params.value.employeeName} (${params.value.role})`
     },
     { 
       field: 'status', 
       headerName: 'Status', 
       flex: 1,
-      cellRenderer: (params: any) => (
+      cellRenderer: (params: { value: string }) => (
         <Tag color={getStatusColor(params.value)}>{params.value.toUpperCase()}</Tag>
       )
     },
@@ -94,7 +94,7 @@ export default function AdminHelpDesk() {
       field: 'priority',
       headerName: 'Priority',
       flex: 1,
-      cellRenderer: (params: any) => (
+      cellRenderer: (params: { value: string }) => (
         <Tag color={getPriorityColor(params.value)}>{params.value.toUpperCase()}</Tag>
       )
     },
@@ -102,12 +102,12 @@ export default function AdminHelpDesk() {
       field: 'assignedAdmin',
       headerName: 'Assigned Admin',
       flex: 1.5,
-      valueFormatter: (params: any) => params.value || 'Unassigned'
+      valueFormatter: (params: { value: string | null }) => params.value || 'Unassigned'
     },
     {
       headerName: 'Actions',
       field: 'actions',
-      cellRenderer: (params: any) => (
+      cellRenderer: (params: { data: Query }) => (
            <button
             className="p-2 text-blue-500 hover:text-blue-600 transition-colors"
             onClick={() => handleUpdateClick(params.data)}
@@ -118,9 +118,7 @@ export default function AdminHelpDesk() {
       width: 120,
       suppressSizeToFit: true
     }
-  ];
-
-  useEffect(() => {
+  ];  useEffect(() => {
     fetchAllTickets();
   }, []);
 

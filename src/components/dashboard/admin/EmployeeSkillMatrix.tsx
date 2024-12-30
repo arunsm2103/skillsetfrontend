@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Table, Tag, Input, Tooltip, Select } from 'antd';
-import { SearchOutlined, WarningOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import {  WarningOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { getEmployeeMatrix, EmployeeMatrix } from '@/services/dashboardService';
 import { showToast } from '@/utils/toast';
 
@@ -13,14 +13,6 @@ const EmployeeSkillMatrix = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [filteredEmployees, setFilteredEmployees] = useState<EmployeeMatrix[]>([]);
-
-  useEffect(() => {
-    fetchEmployeeMatrix();
-  }, []);
-
-  useEffect(() => {
-    filterEmployees();
-  }, [searchText, selectedDepartment, employees]);
 
   const fetchEmployeeMatrix = async () => {
     try {
@@ -35,7 +27,7 @@ const EmployeeSkillMatrix = () => {
     }
   };
 
-  const filterEmployees = () => {
+  const filterEmployees = useCallback(() => {
     let filtered = [...employees];
 
     // Filter by search text
@@ -57,7 +49,16 @@ const EmployeeSkillMatrix = () => {
     }
 
     setFilteredEmployees(filtered);
-  };
+  },[employees, searchText, selectedDepartment]);
+
+
+  useEffect(() => {
+    fetchEmployeeMatrix();
+  }, []);
+
+  useEffect(() => {
+    filterEmployees();
+  }, [searchText, selectedDepartment, employees, filterEmployees]);
 
   const departments = [...new Set(employees.map(emp => emp.department))];
 

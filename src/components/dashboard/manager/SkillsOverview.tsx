@@ -42,7 +42,15 @@ const SkillsOverview = () => {
   };
   console.log(getFilteredData(),'kk');
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ 
+    active, 
+    payload, 
+    label 
+  }: {
+    active?: boolean;
+    payload?: Array<{ value: number }>;
+    label?: string;
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 shadow-lg rounded border">
@@ -55,7 +63,6 @@ const SkillsOverview = () => {
     }
     return null;
   };
-
   return (
     <div className="bg-white rounded-xl shadow p-6 h-[500px]">
       <div className="flex items-center justify-between mb-6">

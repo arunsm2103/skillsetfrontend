@@ -91,7 +91,7 @@ export default function ManagerDashboard() {
           getEmployeeOverview(),
         ]);
 
-      setTeamMembers(membersResponse);
+      setTeamMembers(membersResponse as never);
       setTeamSkills(skillsResponse);
       setOverview(employeeOverview);
     } catch (error) {

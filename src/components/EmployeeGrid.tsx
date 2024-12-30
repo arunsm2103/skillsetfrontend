@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Table, Card, Button, Input, Modal, Form, Select, DatePicker } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Table, Button, Input, Modal, Form, Select, DatePicker } from 'antd';
 import { EditOutlined, PlusOutlined, FileTextOutlined } from '@ant-design/icons';
 import { getUsers, createUser, updateUser, User, CreateUserPayload, UpdateUserPayload } from '@/services/userService';
 import { showToast } from '@/utils/toast';
@@ -25,11 +25,7 @@ const EmployeeGrid = () => {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-    filterUsers();
-  }, [searchText, users]);
-
-  const filterUsers = () => {
+  const filterUsers = useCallback(() => {
     const filtered = users.filter(user => 
       user.employeeName.toLowerCase().includes(searchText.toLowerCase()) ||
       user.employeeCode.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -38,13 +34,18 @@ const EmployeeGrid = () => {
       user.officialEmail.toLowerCase().includes(searchText.toLowerCase())
     );
     setFilteredUsers(filtered);
-  };
+  },[searchText, users]);
+
+  useEffect(() => {
+    filterUsers();
+  }, [filterUsers, searchText, users]);
+
 
   const fetchUsers = async () => {
     try {
       const data = await getUsers();
       setUsers(data);
-    } catch (error) {
+    } catch {
       showToast.error('Failed to fetch users');
     } finally {
       setLoading(false);
@@ -58,7 +59,7 @@ const EmployeeGrid = () => {
       fetchUsers();
       setModalVisible(false);
       form.resetFields();
-    } catch (error) {
+    } catch {
       showToast.error('Failed to create user');
     }
   };
@@ -72,7 +73,7 @@ const EmployeeGrid = () => {
       setModalVisible(false);
       setEditingUser(null);
       form.resetFields();
-    } catch (error) {
+    } catch {
       showToast.error('Failed to update user');
     }
   };
@@ -118,7 +119,7 @@ const EmployeeGrid = () => {
       title: 'Actions',
       key: 'actions',
       width: 120,
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <div className="flex items-center gap-2">
           <Button
             type="link"

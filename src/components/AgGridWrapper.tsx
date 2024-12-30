@@ -7,6 +7,7 @@ import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function AgGridWrapper(props: any) {
   const defaultProps = {
     suppressCellFocus: true,

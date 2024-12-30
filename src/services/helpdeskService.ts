@@ -16,7 +16,7 @@ export const getTickets = async () => {
   }
 };
 
-export const addTicket = async (ticketData: any) => {
+export const addTicket = async (ticketData: { queryType: string; description: string; priority: 'low' | 'medium' | 'high' }) => {
   try {
     const response = await ApiService.post(ENDPOINTS.HELPDESK.ADD_TICKET, ticketData);
     return response.data;
@@ -25,7 +25,6 @@ export const addTicket = async (ticketData: any) => {
     throw error;
   }
 };
-
 export const updateTicket = async (ticketId: string, updates: TicketUpdate) => {
   try {
     const response = await ApiService.patch(

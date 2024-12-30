@@ -1,9 +1,9 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { getAllSkills, getEmployeeOverview, getSkillDirectory, MasterSkill } from "@/services/dashboardService";
+import { getAllSkills, getEmployeeOverview, MasterSkill } from "@/services/dashboardService";
 import { getUser } from "@/services/userService";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -75,7 +75,7 @@ export default function EmployeeDashboard() {
 
   const { user } = useAuth();
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [overviewResponse, userDataResponse] = await Promise.all([
@@ -90,13 +90,13 @@ export default function EmployeeDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  },[user?.id]);
 
   useEffect(() => {
     if (user?.id) {
       fetchDashboardData();
     }
-  }, [user?.id]);
+  }, [fetchDashboardData, user?.id]);
 
   useEffect(() => {
     fetchAvailableSkills();
@@ -120,7 +120,7 @@ export default function EmployeeDashboard() {
       setShowSkillModal(false);
       // Refetch all dashboard data
       await fetchDashboardData();
-    } catch (error) {
+    } catch {
       message.error('Failed to add skill assessment');
     } finally {
       setLoading(false);

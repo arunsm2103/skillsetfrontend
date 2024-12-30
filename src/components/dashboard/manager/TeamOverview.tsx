@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Avatar, Button, Select, Input } from 'antd';
 import { TeamOutlined, UserOutlined, DownloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { getTeamMembers, updateTeamMemberSkill } from '@/services/dashboardService';
@@ -54,7 +54,6 @@ const TeamOverview = () => {
   const router = useRouter();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [filteredMembers, setFilteredMembers] = useState<TeamMember[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [updatingSkill, setUpdatingSkill] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -64,18 +63,19 @@ const TeamOverview = () => {
     fetchTeamMembers();
   }, []);
 
-  useEffect(() => {
-    filterMembers();
-  }, [searchText, teamMembers]);
-
-  const filterMembers = () => {
+  const filterMembers = useCallback(() => {
     const filtered = teamMembers.filter(member => 
       member.employeeName.toLowerCase().includes(searchText.toLowerCase()) ||
       member.designation.toLowerCase().includes(searchText.toLowerCase()) ||
       member.department.toLowerCase().includes(searchText.toLowerCase())
     );
     setFilteredMembers(filtered);
-  };
+  },[searchText, teamMembers]);
+
+  useEffect(() => {
+    filterMembers();
+  }, [filterMembers, searchText, teamMembers]);
+
 
   const fetchTeamMembers = async () => {
     try {
@@ -83,8 +83,6 @@ const TeamOverview = () => {
       setTeamMembers(data);
     } catch (error) {
       console.error('Error fetching team members:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -108,7 +106,7 @@ const TeamOverview = () => {
       if (updatedMember) {
         setSelectedMember(updatedMember);
       }
-    } catch (error) {
+    } catch {
       showToast.error('Failed to update skill level');
     } finally {
       setUpdatingSkill(false);

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import OverviewMetrics from './OverviewMetrics';
 import SkillDirectory from './SkillDirectory';
 import EmployeeSkillMatrix from './EmployeeSkillMatrix';
-import SkillGapAnalytics from './SkillGapAnalytics';
 import { getDashboardMetrics } from '@/services/dashboardService';
 
 const AdminDashboard = () => {

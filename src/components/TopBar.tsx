@@ -4,7 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { DashboardOutlined, CustomerServiceOutlined, UserOutlined, TeamOutlined, TrophyOutlined } from "@ant-design/icons";
+import { DashboardOutlined, CustomerServiceOutlined, UserOutlined, TeamOutlined } from "@ant-design/icons";
 
 export default function Topbar() {
   const pathname = usePathname();

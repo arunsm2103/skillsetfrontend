@@ -38,7 +38,7 @@ export default function ForgotPassword() {
       setEmail(values.email);
       message.success('OTP sent to your email');
       setCurrentStep(1);
-    } catch (error) {
+    } catch  {
       message.error('Failed to send OTP. Please try again.');
     }
   };
@@ -52,7 +52,7 @@ export default function ForgotPassword() {
       setResetToken(response.data.token);
       message.success('OTP verified successfully');
       setCurrentStep(2);
-    } catch (error) {
+    } catch  {
       message.error('Invalid or expired OTP');
     }
   };
@@ -71,7 +71,7 @@ export default function ForgotPassword() {
 
       message.success('Password reset successful');
       router.push('/login');
-    } catch (error) {
+    } catch  {
       message.error('Failed to reset password');
     }
   };
